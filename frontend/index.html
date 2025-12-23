@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <h2>Nuevo préstamo</h2>
+
+<form id="formPrestamo">
+  <input type="text" id="usuario" placeholder="Nombre del usuario" required />
+  <input type="text" id="recurso" placeholder="Recurso" required />
+  <button type="submit">Registrar préstamo</button>
+</form>
+
+<hr>
+
+  <meta charset="UTF-8">
+  <title>Préstamos en curso</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    table {
+      width: 80%;
+      margin: auto;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+
+    th {
+      background: #2c3e50;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+
+<h1>📋 Préstamos en curso</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Usuario</th>
+      <th>Recurso</th>
+      <th>Fecha retiro</th>
+      <th>Estado</th>
+    </tr>
+  </thead>
+  <tbody id="tabla-prestamos">
+  </tbody>
+</table>
+
+<script>
+  document.getElementById("formPrestamo").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const usuario = document.getElementById("usuario").value;
+  const recurso = document.getElementById("recurso").value;
+
+  const res = await fetch("/prestamos", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ usuario, recurso })
+  });
+
+  if (res.ok) {
+    alert("Préstamo registrado");
+    location.reload();
+  } else {
+    alert("Error al registrar préstamo");
+  }
+});
+
+  fetch("/prestamos")
+    .then(res => res.json())
+    .then(data => {
+      const tabla = document.getElementById("tabla-prestamos");
+
+      data.forEach(p => {
+        const fila = document.createElement("tr");
+
+        fila.innerHTML = `
+          <td>${p.id}</td>
+          <td>${p.usuario}</td>
+          <td>${p.recurso}</td>
+          <td>${new Date(p.fecha_retiro).toLocaleString()}</td>
+          <td>${p.estado}</td>
+        `;
+
+        tabla.appendChild(fila);
+      });
+    })
+    .catch(err => {
+      console.error("Error cargando préstamos", err);
+    });
+</script>
+
+</body>
+</html>
