@@ -7,6 +7,9 @@
   <input type="text" id="usuario" placeholder="Nombre del usuario" required />
   <input type="text" id="recurso" placeholder="Recurso" required />
   <button type="submit">Registrar préstamo</button>
+  <button onclick="listarServicios()">📦 Listar servicios</button>
+  <div id="servicios"></div>
+
 </form>
 
 <hr>
@@ -108,6 +111,28 @@
     .catch(err => {
       console.error("Error cargando préstamos", err);
     });
+   
+    function listarServicios() {
+  fetch("https://fakestoreapi.com/products/category/electronics")
+    .then(res => res.json())
+    .then(data => mostrarServicios(data.slice(0, 10)));
+}
+
+function mostrarServicios(productos) {
+  const contenedor = document.getElementById("servicios");
+  contenedor.innerHTML = "<h3>Servicios / Recursos disponibles</h3>";
+
+  productos.forEach(p => {
+    contenedor.innerHTML += `
+      <div style="border:1px solid #ccc; padding:10px; margin:5px">
+        <strong>${p.title}</strong><br>
+        Categoría: ${p.category}<br>
+        Precio referencia: $${p.price}
+      </div>
+    `;
+  });
+}
+
 </script>
 
 </body>
